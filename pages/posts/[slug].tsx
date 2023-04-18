@@ -1,6 +1,30 @@
 import React from 'react'
+import { getSinglePost } from '@/lib/notionAPI'
 
-const Post = () => {
+export async function getStaticPaths() {
+  return {
+    paths: [
+      { params: { slug: 'first-post' } },
+      { params: { slug: 'second-post' } },
+      { params: { slug: 'third-post' } },
+    ],
+    fallback: 'blocking', // can also be true or 'blocking'
+  }
+}
+export async function getStaticProps<GetStaticProps>({ params }: any) {
+  console.log('params', params)
+  const post = await getSinglePost(params.slug)
+  return {
+    props: { post },
+    revalidate: 60, // 60秒ごと更新する(ISR)
+  }
+}
+
+type Props = {
+  // allPosts: Post[]
+}
+
+const Post = ({ post }: any) => {
   return (
     <section className="container lg:px-2 px-5 h-screen lg:w-2/5 mx-auto mt-20">
       <h2 className="w-full text-2xl font-medium">３回目の投稿です。</h2>
