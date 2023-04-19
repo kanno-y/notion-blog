@@ -1,24 +1,17 @@
 import { Inter } from 'next/font/google'
-import { getAllPosts } from '@/lib/notionAPI'
+import { MetadataProps, getAllPosts } from '@/lib/notionAPI'
 import Head from 'next/head'
 import { SinglePost } from '@/components/Post/SinglePost'
 
-export type Post = {
-  title: string
-  description: string
-  date: string
-  slug: string
-  tags: string[]
-}
 export async function getStaticProps<GetStaticProps>(context: any) {
-  const allPosts: Post[] = await getAllPosts()
+  const allPosts: MetadataProps[] = await getAllPosts()
   return {
     props: { allPosts },
     revalidate: 60, // 60秒ごと更新する(ISR)
   }
 }
 type Props = {
-  allPosts: Post[]
+  allPosts: MetadataProps[]
 }
 
 export default function Home({ allPosts }: Props) {
