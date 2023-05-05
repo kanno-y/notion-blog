@@ -1,21 +1,20 @@
-import { Inter } from 'next/font/google'
-import { MetadataProps, getAllPosts } from '@/lib/notionAPI'
+import { MetadataProps, getAllPosts, getPostsForTopPage } from '@/lib/notionAPI'
 import Head from 'next/head'
 import { SinglePost } from '@/components/Post/SinglePost'
+import { GetStaticProps } from 'next/types'
 
-export async function getStaticProps<GetStaticProps>(context: any) {
-  const allPosts: MetadataProps[] = await getAllPosts()
+export const getStaticProps: GetStaticProps = async () => {
+  const fourPosts: MetadataProps[] = await getPostsForTopPage()
   return {
-    props: { allPosts },
+    props: { fourPosts },
     revalidate: 60, // 60秒ごと更新する(ISR)
   }
 }
 type Props = {
-  allPosts: MetadataProps[]
+  fourPosts: MetadataProps[]
 }
 
-export default function Home({ allPosts }: Props) {
-  console.log(allPosts)
+export default function Home({ fourPosts }: Props) {
   return (
     <div className="container h-full w-full mx-auto">
       <Head>
@@ -29,7 +28,7 @@ export default function Home({ allPosts }: Props) {
           Notion Blog🚀
         </h1>
       </main>
-      {allPosts.map((post: any) => (
+      {fourPosts.map((post: any) => (
         <div className="mx-4" key={post.title}>
           <SinglePost
             title={post.title}
