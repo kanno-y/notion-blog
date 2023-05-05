@@ -1,6 +1,9 @@
 import React from 'react'
 import { getAllPosts, getSinglePost } from '@/lib/notionAPI'
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism'
+import Link from 'next/link'
 
 export async function getStaticPaths() {
   const allPosts = getAllPosts()
@@ -39,7 +42,31 @@ const Post: React.FC<any> = ({ post }) => {
         </p>
       ))}
       <div className="mt-10 font-medium">
-        <ReactMarkdown>{post.markdown}</ReactMarkdown>
+        <ReactMarkdown
+          components={{
+            code({ node, inline, className, children, ...props }) {
+              const match = /language-(\w+)/.exec(className || '')
+              return !inline && match ? (
+                <SyntaxHighlighter
+                  style={vscDarkPlus}
+                  language={match[1]}
+                  PreTag="div"
+                >
+                  {String(children).replace(/\n$/, '')}
+                </SyntaxHighlighter>
+              ) : (
+                <code {...props} className={className}>
+                  {children}
+                </code>
+              )
+            },
+          }}
+        >
+          {post.markdown}
+        </ReactMarkdown>
+        <Link href="/">
+          <span className="pb-20 block mt-3 text-sky-900">←ホームに戻る</span>
+        </Link>
       </div>
     </section>
   )
