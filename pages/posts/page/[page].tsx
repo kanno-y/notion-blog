@@ -1,8 +1,14 @@
 import { MetadataProps, getAllPosts, getPostsForTopPage } from '@/lib/notionAPI'
 import Head from 'next/head'
 import { SinglePost } from '@/components/Post/SinglePost'
-import { GetStaticProps } from 'next/types'
-import Link from 'next/link'
+import { GetStaticPaths, GetStaticProps } from 'next/types'
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: [{ params: { page: '1' } }, { params: { page: '2' } }],
+    fallback: 'blocking',
+  }
+}
 
 export const getStaticProps: GetStaticProps = async () => {
   const fourPosts: MetadataProps[] = await getPostsForTopPage()
@@ -15,7 +21,7 @@ type Props = {
   fourPosts: MetadataProps[]
 }
 
-export default function Home({ fourPosts }: Props) {
+const BlogPageList = ({ fourPosts }: Props) => {
   return (
     <div className="container h-full w-full mx-auto">
       <Head>
@@ -29,24 +35,22 @@ export default function Home({ fourPosts }: Props) {
           Notion Blog🚀
         </h1>
       </main>
-      {fourPosts.map((post: any) => (
-        <div className="mx-4" key={post.title}>
-          <SinglePost
-            title={post.title}
-            description={post.description}
-            date={post.date}
-            slug={post.slug}
-            tags={post.tags}
-            isPaginationPage={false}
-          />
-        </div>
-      ))}
-      <Link
-        href={'/posts/page/1'}
-        className="mb-6 lg:w-1/2 mx-auto  px-5 block text-right"
-      >
-        <span>...もっと見る</span>
-      </Link>
+      <section className="sm:grid grid-cols-2 w-5/6 gap-3 mx-auto">
+        {fourPosts.map((post: MetadataProps) => (
+          <div key={post.title}>
+            <SinglePost
+              title={post.title}
+              description={post.description}
+              date={post.date}
+              slug={post.slug}
+              tags={post.tags}
+              isPaginationPage={true}
+            />
+          </div>
+        ))}
+      </section>
     </div>
   )
 }
+
+export default BlogPageList
