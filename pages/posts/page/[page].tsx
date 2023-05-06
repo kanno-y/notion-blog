@@ -8,6 +8,7 @@ import {
 import Head from 'next/head'
 import { SinglePost } from '@/components/Post/SinglePost'
 import { GetStaticPaths, GetStaticProps } from 'next/types'
+import { Pagination } from '@/components/Pagination/Pagination'
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const numberOfPage = await getNumberOfPages()
@@ -26,16 +27,19 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const currentPage = context.params?.page
   const postsByPage =
     currentPage && (await getPostsByPage(parseInt(currentPage.toString(), 10)))
+
+  const numberOfPage = await getNumberOfPages()
   return {
-    props: { postsByPage },
+    props: { postsByPage, numberOfPage },
     revalidate: 60, // 60秒ごと更新する(ISR)
   }
 }
 type Props = {
   postsByPage: MetadataProps[]
+  numberOfPage: number
 }
 
-const BlogPageList = ({ postsByPage }: Props) => {
+const BlogPageList = ({ postsByPage, numberOfPage }: Props) => {
   return (
     <div className="container h-full w-full mx-auto">
       <Head>
@@ -63,6 +67,7 @@ const BlogPageList = ({ postsByPage }: Props) => {
           </div>
         ))}
       </section>
+      <Pagination numberOfPage={numberOfPage} />
     </div>
   )
 }

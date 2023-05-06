@@ -79,9 +79,8 @@ export const getPostsByPage = async (page: number) => {
 export const getNumberOfPages = async () => {
   const allPosts = await getAllPosts()
 
-  return Math.floor(allPosts.length / NUMBER_OF_POSTS_PER_PAGE) +
-    (allPosts.length % NUMBER_OF_POSTS_PER_PAGE) >
-    0
-    ? 1
-    : 0
+  return (
+    Math.floor(allPosts.length / NUMBER_OF_POSTS_PER_PAGE) +
+    (allPosts.length % NUMBER_OF_POSTS_PER_PAGE > 0 ? 1 : 0)
+  )
 }
