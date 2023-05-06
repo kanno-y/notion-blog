@@ -1,27 +1,41 @@
-import { MetadataProps, getAllPosts, getPostsForTopPage } from '@/lib/notionAPI'
+import {
+  MetadataProps,
+  getAllPosts,
+  getNumberOfPages,
+  getPostsByPage,
+  getPostsForTopPage,
+} from '@/lib/notionAPI'
 import Head from 'next/head'
 import { SinglePost } from '@/components/Post/SinglePost'
 import { GetStaticPaths, GetStaticProps } from 'next/types'
 
 export const getStaticPaths: GetStaticPaths = async () => {
+  const numberOfPage = await getNumberOfPages()
+
+  let params = []
+  for (let i = 1; i <= numberOfPage; i++) {
+    params.push({ params: { page: i.toString() } })
+  }
   return {
-    paths: [{ params: { page: '1' } }, { params: { page: '2' } }],
+    paths: params,
     fallback: 'blocking',
   }
 }
 
-export const getStaticProps: GetStaticProps = async () => {
-  const fourPosts: MetadataProps[] = await getPostsForTopPage()
+export const getStaticProps: GetStaticProps = async (context) => {
+  const currentPage = context.params?.page
+  const postsByPage =
+    currentPage && (await getPostsByPage(parseInt(currentPage.toString(), 10)))
   return {
-    props: { fourPosts },
+    props: { postsByPage },
     revalidate: 60, // 60秒ごと更新する(ISR)
   }
 }
 type Props = {
-  fourPosts: MetadataProps[]
+  postsByPage: MetadataProps[]
 }
 
-const BlogPageList = ({ fourPosts }: Props) => {
+const BlogPageList = ({ postsByPage }: Props) => {
   return (
     <div className="container h-full w-full mx-auto">
       <Head>
@@ -36,7 +50,7 @@ const BlogPageList = ({ fourPosts }: Props) => {
         </h1>
       </main>
       <section className="sm:grid grid-cols-2 w-5/6 gap-3 mx-auto">
-        {fourPosts.map((post: MetadataProps) => (
+        {postsByPage.map((post: MetadataProps) => (
           <div key={post.title}>
             <SinglePost
               title={post.title}
