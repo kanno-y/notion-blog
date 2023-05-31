@@ -26,10 +26,9 @@ export const getStaticPaths: GetStaticPaths = async (context) => {
       })
     })
   )
-  console.log(params)
 
   return {
-    paths: [{ params: { tag: 'blog', page: '1' } }],
+    paths: params,
     fallback: 'blocking',
   }
 }
@@ -40,21 +39,30 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   const upperCaseCurrentTag =
     currentTag.charAt(0).toUpperCase() + currentTag.slice(1)
+
   const posts = await getPostsTagAndPage(
     upperCaseCurrentTag,
     parseInt(currentPage, 10)
   )
 
+  const numberOfPagesByTag = await getNumberOfPagesByTags(upperCaseCurrentTag)
+
   return {
-    props: { posts },
+    props: { posts, numberOfPagesByTag },
     revalidate: 60, // 60秒ごと更新する(ISR)
   }
 }
 type Props = {
   posts: MetadataProps[]
+  numberOfPagesByTag: number
+  currentTag: string
 }
 
-const BlogTagPageList = ({ posts }: Props) => {
+const BlogTagPageList = ({
+  posts,
+  numberOfPagesByTag,
+  currentTag,
+}: Props) => {
   return (
     <div className="container h-full w-full mx-auto">
       <Head>
@@ -82,7 +90,7 @@ const BlogTagPageList = ({ posts }: Props) => {
           </div>
         ))}
       </section>
-      {/* <Pagination numberOfPage={numberOfPage} /> */}
+      <Pagination numberOfPage={numberOfPagesByTag} tag={currentTag} />
     </div>
   )
 }

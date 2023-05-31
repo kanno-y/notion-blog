@@ -67,7 +67,7 @@ const BlogPageList = ({ postsByPage, numberOfPage }: Props) => {
           </div>
         ))}
       </section>
-      <Pagination numberOfPage={numberOfPage} />
+      <Pagination numberOfPage={numberOfPage} tag={''} />
     </div>
   )
 }
