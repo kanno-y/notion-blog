@@ -3,6 +3,7 @@ import Head from 'next/head'
 import { SinglePost } from '@/components/Post/SinglePost'
 import { GetStaticProps } from 'next/types'
 import Link from 'next/link'
+import { Tag } from '@/components/Tag/Tag'
 
 export const getStaticProps: GetStaticProps = async () => {
   const fourPosts: MetadataProps[] = await getPostsForTopPage()
@@ -47,6 +48,7 @@ export default function Home({ fourPosts }: Props) {
       >
         <span>...もっと見る</span>
       </Link>
+      <Tag />
     </div>
   )
 }
