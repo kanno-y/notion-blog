@@ -1,4 +1,9 @@
-import { MetadataProps, getAllPosts, getPostsForTopPage } from '@/lib/notionAPI'
+import {
+  MetadataProps,
+  getAllPosts,
+  getAllTags,
+  getPostsForTopPage,
+} from '@/lib/notionAPI'
 import Head from 'next/head'
 import { SinglePost } from '@/components/Post/SinglePost'
 import { GetStaticProps } from 'next/types'
@@ -7,16 +12,18 @@ import { Tag } from '@/components/Tag/Tag'
 
 export const getStaticProps: GetStaticProps = async () => {
   const fourPosts: MetadataProps[] = await getPostsForTopPage()
+  const allTags = await getAllTags()
   return {
-    props: { fourPosts },
+    props: { fourPosts, allTags },
     revalidate: 60, // 60秒ごと更新する(ISR)
   }
 }
 type Props = {
   fourPosts: MetadataProps[]
+  allTags: string[]
 }
 
-export default function Home({ fourPosts }: Props) {
+export default function Home({ fourPosts, allTags }: Props) {
   return (
     <div className="container h-full w-full mx-auto">
       <Head>
@@ -48,7 +55,7 @@ export default function Home({ fourPosts }: Props) {
       >
         <span>...もっと見る</span>
       </Link>
-      <Tag />
+      <Tag tags={allTags} />
     </div>
   )
 }
