@@ -38,7 +38,7 @@ const Post: React.FC<any> = ({ post }) => {
           className="text-white bg-sky-900 rounded-xl font-medium mt-2 px-2 inline-block mr-2"
           key={`${tag}_${index}`}
         >
-          {tag}
+          <Link href={`/posts/tag/${tag}/page/1`}>{tag}</Link>
         </p>
       ))}
       <div className="mt-10 font-medium">

@@ -12,6 +12,7 @@ import Head from 'next/head'
 import { SinglePost } from '@/components/Post/SinglePost'
 import { GetStaticPaths, GetStaticProps } from 'next/types'
 import { Pagination } from '@/components/Pagination/Pagination'
+import { Tag } from '@/components/Tag/Tag'
 
 export const getStaticPaths: GetStaticPaths = async (context) => {
   const allTags = await getAllTags()
@@ -46,9 +47,9 @@ export const getStaticProps: GetStaticProps = async (context) => {
   )
 
   const numberOfPagesByTag = await getNumberOfPagesByTags(upperCaseCurrentTag)
-
+  const allTags = await getAllTags()
   return {
-    props: { posts, numberOfPagesByTag },
+    props: { posts, numberOfPagesByTag, allTags },
     revalidate: 60, // 60秒ごと更新する(ISR)
   }
 }
@@ -56,12 +57,14 @@ type Props = {
   posts: MetadataProps[]
   numberOfPagesByTag: number
   currentTag: string
+  allTags: string[]
 }
 
 const BlogTagPageList = ({
   posts,
   numberOfPagesByTag,
   currentTag,
+  allTags,
 }: Props) => {
   return (
     <div className="container h-full w-full mx-auto">
@@ -91,6 +94,7 @@ const BlogTagPageList = ({
         ))}
       </section>
       <Pagination numberOfPage={numberOfPagesByTag} tag={currentTag} />
+      <Tag tags={allTags} />
     </div>
   )
 }
